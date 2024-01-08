@@ -4,7 +4,7 @@ dotenv.config;
 
 export function authentication(req, res, next) {
   const authHead = req.headers["authorization"];
-  console.log(authHead);
+  console.log("authhead", authHead);
   const token = authHead && authHead.split(" ")[1];
   if (token == null) {
     res.sendStatus(404);

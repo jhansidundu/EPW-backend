@@ -21,16 +21,19 @@ const validateName = (name) => {
   return false;
 };
 export const registerUser = (req, res) => {
-  const { name, email, role_id, password } = req.body;
-  console.log(req.body);
-  const mail = validateEmail(email);
-  const identity = validateName(name);
-  let note;
-  if (mail && identity) {
-    note = user_insert(name, email, role_id, password);
+  try {
+    const { name, email, role_id, password } = req.body;
+    console.log(req.body);
+    const mail = validateEmail(email);
+    const identity = validateName(name);
+    let note;
+    if (mail && identity) {
+      note = user_insert(name, email, role_id, password);
+    }
+    res.json({ success: true, data: note });
+  } catch (e) {
+    res.json({ success: false, message: e });
   }
-
-  res.send(note);
 };
 
 export const validatePass = async (req, res) => {
@@ -51,7 +54,7 @@ export const validatePass = async (req, res) => {
           role_id: result.role_id,
         };
         const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-        res.json({ accessToken: accessToken });
+        res.json({ success: true, data: accessToken });
         // res.status(200).json("VALID PASS");
       } else {
         res.json("wrong pass");
@@ -59,6 +62,6 @@ export const validatePass = async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json("Something broke");
+    res.status(500).json({ success: fail, message: e });
   }
 };
