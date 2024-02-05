@@ -7,16 +7,18 @@ export async function createExam(req, res) {
     if (req.user.role_id === 1) {
       const { created_by, start_time, duration, total_questions, exam_name } =
         req.body;
-      console.log(created_by);
-      const res = await exam_insert(
+      console.log("this is req.body in the createexam", req.body);
+      console.log("in create exam", created_by);
+      const result = await exam_insert(
         created_by,
         start_time,
         duration,
         total_questions,
         exam_name
       );
-      console.log(res);
+      console.log("inserted result in  createdexam", result);
     }
+    console.log("user logged in is not a teacher");
     res.json({ success: false });
   } catch (e) {
     res.json({ success: false, message: e });

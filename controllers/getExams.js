@@ -30,3 +30,22 @@ export const getExamswithId = async (req, res) => {
     res.status(500).send({ success: true, message: e });
   }
 };
+
+export const deleteExam = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const user_Id = req.user.userId;
+    console.log(user_Id);
+    const result = await pool.query(
+      "delete from exams where created_by = ? and id = ?",
+      [user_Id, id]
+    );
+    res.send({ success: true, data: result[0] });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({ success: true, message: e });
+  }
+};
+// oh shanthi
+// omm shanthi

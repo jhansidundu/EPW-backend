@@ -1,8 +1,10 @@
 import jwt from "jsonwebtoken";
-import { question_insert } from "../users.js";
+// import { question_insert } from "../users.js";
 import { pool } from "../databasePool.js";
 // import { authentication } from "./authentication.js";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+
 dotenv.config;
 
 export const addQuestions = (req, res) => {
@@ -57,4 +59,34 @@ export const updatequestions = async (req, res) => {
   } catch (e) {
     res.send({ success: false, message: e });
   }
+};
+
+export const question_insert = function (
+  exam_id,
+  question,
+  option_A,
+  option_B,
+  option_C,
+  option_D,
+  answer,
+  marks,
+  has_negative,
+  negative_percentage
+) {
+  const result = pool.query(
+    "insert into questions (exam_id,question,option_A,option_B,option_C,option_D,answer,marks,has_negative,negative_percentage) values (?,?,?,?,?,?,?,?,?,?) ",
+    [
+      exam_id,
+      question,
+      option_A,
+      option_B,
+      option_C,
+      option_D,
+      answer,
+      marks,
+      has_negative,
+      negative_percentage,
+    ]
+  );
+  return result;
 };
