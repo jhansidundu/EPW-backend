@@ -58,17 +58,17 @@ export const registerUser = (req, res) => {
 
 export const validatePass = async (req, res) => {
   try {
-    const { Email, Pas } = req.body;
+    const { email, passwordas } = req.body;
     console.log("this console log is sigin request body", req.body);
     let result = await pool.query("select * from users where email = ?", [
-      Email,
+      email,
     ]);
     result = result[0][0];
     console.log(result);
     if (result) {
       // const res = result.rows[0];
       const pas = result.password;
-      const validation = await bcrypt.compare(Pas, pas);
+      const validation = await bcrypt.compare(password, pas);
       if (validation) {
         const role_name = await pool.query(
           "select role_name from roles where id =?",
@@ -90,7 +90,7 @@ export const validatePass = async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ success: fail, message: e });
+    res.status(500).json({ success: false, message: e });
   }
 };
 

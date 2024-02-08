@@ -8,7 +8,7 @@ export const user_insert = async function (name) {
 const res = await user_insert("kiran123");
 console.log(res);
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjcsImVtYWlsIjoia2lyYW4xMjNAZ21haWwuY29tIiwicm9sZV9pZCI6MywiaWF0IjoxNzA2ODc2NDkyfQ.-dvZhiULKbtjR9fDMf59ejqd2ztwDIaU0v1UiWJ5hew
-
+// teacher eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImVtYWlsIjoibWFyaTEyQGdtYWlsLmNvbSIsInJvbGVfaWQiOjEsInJvbGVfbmFtZSI6InRlYWNoZXIiLCJpYXQiOjE3MDcyMzY0MDh9._9_u70o_tH_8YRNE9DLEl5JDlFZuI6GTgkJHVZJQx8U
 // {
 //     "data" : [
 //     {"exam_id": 1,

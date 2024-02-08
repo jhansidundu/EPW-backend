@@ -11,6 +11,7 @@ import { sendAns } from "./controllers/email.js";
 import dotenv from "dotenv";
 import adminFunc from "./routes/admin.js";
 import enrollusers from "./routes/enrollUsers.js";
+import Answers from "./routes/studentAnswer.js";
 dotenv.config;
 const app = express();
 
@@ -18,11 +19,13 @@ app.use(express.json());
 
 app.use(cors());
 app.use("/api/user", userRoutes);
-app.use(authentication);
+// app.use(authentication);
 app.use("/api/enrollment", enrollusers);
+app.use("/api/answers", Answers);
 app.use("/api/admin", adminFunc);
 app.use("/api/exam", examRoute);
 app.use("/api/question", questionRoute);
+
 // app.use(sendAns);
 // app.use("/send-email", mailSent);
 
@@ -30,7 +33,9 @@ app.use((req, res, err) => {
   // console.error(err);
   // console.log(req);
   // console.log(res);
-
+  // console.log(err);
   res.status(500).send({ success: false, message: err });
 });
-app.listen(5000, () => {});
+app.listen(5000, () => {
+  console.log("Server started.");
+});
