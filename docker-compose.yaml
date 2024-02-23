@@ -6,15 +6,15 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: "db"
-      MYSQL_USER: "jhansi"
-      MYSQL_PASSWORD: "jhansi"
-      MYSQL_ROOT_PASSWORD: "ariyana"
+      - MYSQL_DATABASE=exam
+      - MYSQL_USER=jhansi
+      - MYSQL_PASSWORD=jhansi
+      - MYSQL_ROOT_PASSWORD=ariyana
     volumes:
       - my-db:/var/lib/mysql
 volumes:
   my-db:
 # docker-compose
 # docker-compose up -d
-# docker-compose down
-# docker exec -it sample-node-mysql_db_1 sh
+# docker-compose down -
+# docker exec -it <container_id> sh (use docker-compose ps to find the container id)

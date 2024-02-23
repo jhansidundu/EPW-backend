@@ -2,19 +2,26 @@
 // GET api/exams/:examId
 // POST
 import express from "express";
-import { createExam } from "../controllers/exams.js";
-import { getExams } from "../controllers/exams.js";
-import { getExamswithId } from "../controllers/exams.js";
-import { deleteExam } from "../controllers/exams.js";
-import { authentication } from "../controllers/authentication.js";
-import { getQuestionsWithExam } from "../controllers/exams.js";
-import { getExamDetails } from "../controllers/exams.js";
+import {
+  createExam,
+  deleteExam,
+  getExamDetails,
+  getExamStatusList,
+  getExams,
+  getExamswithId,
+  updateExamSettings,
+} from "../controllers/exams.js";
+import { validateAccessToken } from "../util/middleware.js";
+import { getQuestionsByExam } from "../controllers/questions.js";
 const router = express.Router();
-router.post("/createExam", authentication, createExam);
-router.get("/getExams", authentication, getExams);
-router.get("/getExams/:id", authentication, getExamswithId);
-router.get("/deleteExam/:id", authentication, deleteExam);
-router.get("/getquestions", authentication, getQuestionsWithExam);
-router.get("/getexamdetails", authentication, getExamDetails);
+router.get("/", validateAccessToken, getExams);
+router.get("/status", getExamStatusList);
+router.get("/teacher", validateAccessToken, getExams);
+router.post("/add", validateAccessToken, createExam);
+router.post("/update/settings", validateAccessToken, updateExamSettings);
+router.get("/details/:id", validateAccessToken, getExamDetails);
+router.get("/:id", validateAccessToken, getExamswithId);
+router.delete("/:id", validateAccessToken, deleteExam);
+router.get("/:examId/questions", validateAccessToken, getQuestionsByExam);
 
 export default router;

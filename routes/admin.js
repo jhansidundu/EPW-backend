@@ -1,11 +1,9 @@
 import express from "express";
-import { addTeachers } from "../controllers/admin.js";
-import { deleteTeachers } from "../controllers/admin.js";
-import { authentication } from "../controllers/authentication.js";
-import { addAdmin } from "../controllers/admin.js";
+import { addTeacher, addAdmin } from "../controllers/admin.js";
+import { validateAccessToken } from "../util/middleware.js";
 const router = express.Router();
-router.post("/addTeacher", authentication, addTeachers);
-router.post("/deleteTeacher", authentication, deleteTeachers);
-router.post("/addAdmin", authentication, addAdmin);
+router.post("/teacher/add", validateAccessToken, addTeacher);
+// router.post("/teacher/delete", authentication, deleteTeacher);
+router.post("/add", validateAccessToken, addAdmin);
 
 export default router;

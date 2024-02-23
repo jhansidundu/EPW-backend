@@ -1,72 +1,66 @@
-import { pool } from "../databasePool.js";
-import { user_insert } from "../users.js";
-const validateEmail = (email) => {
-  return String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-};
-const validateName = (name) => {
-  if (name.length !== null && name.length >= 6) {
-    return true;
-  }
-  return false;
-};
-export async function addTeachers(req, res) {
+import { checkIfEmailExists, insertTeacher } from "../db/teachers.js";
+import { insertUser } from "../db/user.js";
+import { ROLES } from "../util/constants.js";
+import { createPasswordHash } from "../util/crypt.js";
+import { validateEmail, validateName } from "../util/validations.js";
+
+export async function addTeacher(req, res, next) {
   try {
-    if (req.user.role_name === "admin") {
-      const { mail } = req.body;
-      if (validateEmail(mail)) {
-        await insert_teacher(mail);
-      }
-      res.send({ success: true });
+    if (req.user.role !== "admin") {
+      res.status(403);
+      throw new Error("Access denied");
     }
-  } catch (e) {
-    res.send({ success: false, error: e });
-  }
-}
-export async function deleteTeachers(req, res) {
-  try {
-    if (req.user.role_name === "admin") {
-      const { mail } = req.body;
-      if (validateEmail(mail)) {
-        await delete_teacher(mail);
-      }
-      res.send({ success: true });
+    const { email } = req.body;
+    if (!validateEmail(email)) {
+      res.status(400);
+      throw new Error("Email is invalid");
     }
+
+    // check if email already exists
+    const [[{ exist }]] = await checkIfEmailExists(email);
+    if (exist === 1) {
+      res.status(400);
+      throw new Error("Email already exists");
+    }
+    await insertTeacher(email);
+    res.send({ success: true });
   } catch (e) {
-    res.send({ success: false, error: e });
+    next(e);
   }
 }
 
-export async function addAdmin(req, res) {
+// delete teacher is different
+// export async function deleteTeacher(req, res) {
+//   try {
+//     if (req.user.role_name === "admin") {
+//       const { mail } = req.body;
+//       if (validateEmail(mail)) {
+//         await deleteTeacher(mail);
+//       }
+//       res.send({ success: true });
+//     }
+//   } catch (e) {
+//     res.send({ success: false, error: e });
+//   }
+// }
+
+export async function addAdmin(req, res, next) {
   try {
-    if (
-      req.user.role_name === "admin" &&
-      req.user.email === "kiran123@gmail.com"
-    ) {
-      const { name, email, role_id, password } = req.body;
-      const mail = validateEmail(email);
-      const identity = validateName(password);
-      console.log(identity);
-      if (mail && identity) {
-        user_insert(name, email, role_id, password);
-        console.log("the insertion is success");
-        return res.json({ success: true });
-      }
-      res.json({ success: true });
+    const user = req.user;
+    if (user.role !== ROLES.ADMIN) {
+      res.status(403);
+      throw new Error("Access denied");
     }
+    const { name, email, roleId, password } = req.body;
+    const mail = validateEmail(email);
+    const identity = validateName(password);
+    if (mail && identity) {
+      const hashedPassword = await createPasswordHash(password);
+      await insertUser(name, email, roleId, hashedPassword);
+      return res.json({ success: true });
+    }
+    res.json({ success: true });
   } catch (e) {
-    res.send({ success: false, Error: e });
+    next(e);
   }
 }
-
-// export function change_password
-const insert_teacher = async (email) => {
-  await pool.query("insert into teachers (emails) values (?)", [email]);
-};
-
-const delete_teacher = async (email) => {
-  await pool.query("delete from teachers where emails = ?", [email]);
-};

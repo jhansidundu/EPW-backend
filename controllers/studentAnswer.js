@@ -1,8 +1,7 @@
 import express from "express";
-import { pool } from "../databasePool.js";
+import { pool } from "../db/databasePool.js";
 
 export const answers = async (req, res) => {
-  console.log(req.body);
   const {
     user_id,
     exam_id,
@@ -18,7 +17,6 @@ export const answers = async (req, res) => {
     );
     res.send({ success: true });
   } catch (e) {
-    console.log(e);
     res.send({ success: false, Error: e });
   }
 };

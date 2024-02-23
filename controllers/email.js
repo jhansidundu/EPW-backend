@@ -17,24 +17,22 @@ export const sendEmail = (to, subject, html) => {
 
   transpoter.sendMail(mailoptioins, (err, info) => {
     if (err) {
-      console.log(err);
       return false;
     }
 
-    console.log("email sent", info.response);
     return true;
   });
 };
 
-export const sendAns = (req, res) => {
+export const sendAns = (req, res, next) => {
   const { to, subject, html } = req.body;
   try {
     if (sendEmail(to, subject, html)) {
       res.send({ success: true, message: "mail successful sent" });
     } else {
-      res.send({ success: false, message: ";email not sent" });
+      res.send({ success: false, message: "email not sent" });
     }
   } catch (e) {
-    console.log("error in sendEmail", e);
+    next(e);
   }
 };

@@ -1,164 +1,141 @@
--- MySQL dump 10.13  Distrib 8.2.0, for Linux (x86_64)
---
--- Host: localhost    Database: exam
--- ------------------------------------------------------
--- Server version       8.2.0
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `attempted_answers`
---
-
-DROP TABLE IF EXISTS `attempted_answers`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `attempted_answers` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `exam_id` int NOT NULL,
-  `candidate_answer` char(1) NOT NULL,
-  `question_id` int NOT NULL,
-  `created_at` timestamp NOT NULL,
-  `updated_at` timestamp NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `exam_id` (`exam_id`),
-  KEY `question_id` (`question_id`),
-  CONSTRAINT `attempted_answers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `attempted_answers_ibfk_2` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`),
-  CONSTRAINT `attempted_answers_ibfk_3` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `enrolled_users`
---
-
-DROP TABLE IF EXISTS `enrolled_users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `enrolled_users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `user_email` varchar(255) NOT NULL,
-  `user_id` int DEFAULT NULL,
-  `exam_id` int NOT NULL,
-  `registration_date` timestamp NOT NULL,
-  `has_attempted` tinyint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  KEY `exam_id` (`exam_id`),
-  CONSTRAINT `enrolled_users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  CONSTRAINT `enrolled_users_ibfk_2` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `exams`
---
-
-DROP TABLE IF EXISTS `exams`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `exams` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `created_by` int NOT NULL,
-  `start_time` timestamp NOT NULL,
-  `duration` int NOT NULL,
-  `total_questions` int NOT NULL,
-  `exam_name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `created_by` (`created_by`),
-  CONSTRAINT `exams_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `questions`
---
-
-DROP TABLE IF EXISTS `questions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `questions` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `exam_id` int NOT NULL,
-  `question` text NOT NULL,
-  `option_A` varchar(255) NOT NULL,
-  `option_B` varchar(255) NOT NULL,
-  `option_C` varchar(255) NOT NULL,
-  `option_D` varchar(255) NOT NULL,
-  `answer` char(1) NOT NULL,
-  `marks` int NOT NULL,
-  `has_negative` tinyint NOT NULL,
-  `negative_percentage` smallint NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `exam_id` (`exam_id`),
-  CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `roles`
---
-
-DROP TABLE IF EXISTS `roles`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `role_name` varchar(255) NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Table structure for table `teachers`
---
-
-DROP TABLE IF EXISTS `teachers`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `teachers` (
-  `emails` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role_id` int DEFAULT NULL,
+  `roleId` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `role_id` (`role_id`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+  KEY `role_id` (`roleId`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `roles` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-05  9:36:48
+-- Table structure for table `teachers`
+CREATE TABLE `teachers` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `teachers_UN` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table structure for table `enrollment_status`
+CREATE TABLE `enrollment_status` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `stauts` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table structure for table `exam_status`
+CREATE TABLE `exam_status` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `status` varchar(100) NOT NULL,
+  `label` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table structure for table `exams`
+CREATE TABLE `exams` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `createdBy` int NOT NULL,
+  `examDate` timestamp NOT NULL,
+  `duration` int NOT NULL,
+  `totalQuestions` int NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `status` int NOT NULL DEFAULT '1',
+  `webcam` tinyint(1) NOT NULL DEFAULT '1',
+  `shuffleQuestions` tinyint(1) NOT NULL DEFAULT '1',
+  `negativeMarking` tinyint(1) NOT NULL DEFAULT '0',
+  `switchBetweenQuestions` tinyint(1) NOT NULL DEFAULT '1',
+  `lockBrowser` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `created_by` (`createdBy`),
+  KEY `exams_exam_status_FK` (`status`),
+  CONSTRAINT `exams_exam_status_FK` FOREIGN KEY (`status`) REFERENCES `exam_status` (`id`),
+  CONSTRAINT `exams_ibfk_1` FOREIGN KEY (`createdBy`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- Table structure for table `questions`
+CREATE TABLE `questions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `examId` int NOT NULL,
+  `question` text NOT NULL,
+  `optionA` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `optionB` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `optionC` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `optionD` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `answer` char(1) NOT NULL,
+  `marks` int NOT NULL,
+  `hasNegative` tinyint NOT NULL,
+  `negativePercentage` varchar(5) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `exam_id` (`examId`),
+  CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`examId`) REFERENCES `exams` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- Table structure for table `enrolled_users`
+CREATE TABLE `enrolled_users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `userId` int DEFAULT NULL,
+  `examId` int NOT NULL,
+  `registrationDate` timestamp NULL DEFAULT NULL,
+  `hasAttempted` tinyint NOT NULL DEFAULT '0',
+  `status` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`userId`),
+  KEY `exam_id` (`examId`),
+  KEY `status` (`status`),
+  CONSTRAINT `enrolled_users_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`),
+  CONSTRAINT `enrolled_users_ibfk_2` FOREIGN KEY (`examId`) REFERENCES `exams` (`id`),
+  CONSTRAINT `enrolled_users_ibfk_3` FOREIGN KEY (`status`) REFERENCES `enrollment_status` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- Table structure for table `attempted_answers`
+CREATE TABLE `attempted_answers` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `userId` int NOT NULL,
+  `examId` int NOT NULL,
+  `answer` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `questionId` int NOT NULL,
+  `createdAt` timestamp NOT NULL,
+  `updatedAt` timestamp NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`userId`),
+  KEY `exam_id` (`examId`),
+  KEY `question_id` (`questionId`),
+  CONSTRAINT `attempted_answers_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`),
+  CONSTRAINT `attempted_answers_ibfk_2` FOREIGN KEY (`examId`) REFERENCES `exams` (`id`),
+  CONSTRAINT `attempted_answers_ibfk_3` FOREIGN KEY (`questionId`) REFERENCES `questions` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table `roles`
+INSERT INTO `roles` VALUES (4,'teacher'),(5,'admin'),(6,'student');
+
+-- Dumping data for table `users`
+INSERT INTO `users` VALUES (10,'admin','admin@gmail.com','$2b$10$rJ/VUyWEpAsVtDprv7fZ.OtCUglkslXrvAqD9h/kz27EYKCCWhHQu',5),(11,'Geetha Krishna','chgeethakrishna@gmail.com','$2b$10$YwIEy0idN14DSh8UguF7nOz8xjXOCLog8i7w9ffRLwuiIEIHBo7Iq',4);
+
+-- Dumping data for table `teachers`
+INSERT INTO `teachers` VALUES (1,'chgeethakrishna@gmail.com');
+
+-- Dumping data for table `enrollment_status`
+INSERT INTO `enrollment_status` VALUES (1,'PENDING');
+
+-- Dumping data for table `exam_status`
+INSERT INTO `exam_status` VALUES (1,'ADD_QUESTIONS','Add Questions'),(2,'ADD_STUDENTS','Add Students'),(3,'UPCOMING','Upcoming'),(4,'ACTIVE','Active'),(5,'COMPLETED','Completed');
+
+-- Dumping data for table `exams`
+INSERT INTO `exams` VALUES (8,11,'2024-02-15 04:30:00',30,12,'Exam 1',1,1,0,0,0,0),(9,11,'2024-02-15 04:10:00',30,0,'Exam 1',1,0,1,1,1,1),(10,11,'2024-02-23 05:30:00',30,13,'Exam 2',1,0,1,0,0,1),(11,11,'2024-02-23 05:20:00',30,15,'Exam 3',1,0,0,0,0,0);
+
+-- Dumping data for table `questions`
+INSERT INTO `questions` VALUES (5,8,'<p>Find the sum of first 100 natural numbers.</p>','5500','5512','5502','5590','B',2,0,'');

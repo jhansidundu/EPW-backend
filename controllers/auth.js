@@ -1,108 +1,109 @@
-import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 
-import { pool } from "../databasePool.js";
-// import { user_insert } from "../users.js";
+import { findRoleId } from "../db/roles.js";
+import { checkIfEmailExists } from "../db/teachers.js";
+import { getUserByEmail, insertUser } from "../db/user.js";
+import { createPasswordHash } from "../util/crypt.js";
+import { validateEmail, validateName } from "../util/validations.js";
+import { generateAccessToken } from "../util/jwtUtil.js";
 
 dotenv.config();
 
-const validateEmail = (email) => {
-  return String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-};
-const validateName = (name) => {
-  if (name.length !== null && name.length >= 6) {
-    return true;
-  }
-  return false;
-};
-export const registerUser = (req, res) => {
+export const registerUser = async (req, res, next) => {
   try {
-    const { name, email, role_id, password } = req.body;
-    if (role_id === 1) {
-      let isTeacher = pool.query(
-        "select emails from teachers where emails = ?",
-        [email]
-      );
-      if (isTeacher) {
-        console.log(req.body);
-        const mail = validateEmail(email);
-        const identity = validateName(password);
-        console.log(identity);
-        if (mail && identity) {
-          user_insert(name, email, role_id, password);
-          console.log("the insertion is success");
-          return res.json({ success: true });
-        }
-        res.json({ success: false });
+    const { name, email, password, role } = req.body;
+    if (!role || (role !== "teacher" && role !== "student")) {
+      res.status("400");
+      throw new Error("Invalid input");
+    }
+    if (role === "teacher") {
+      const [[{ exist }]] = await checkIfEmailExists(email);
+      if (!exist) {
+        res.status(403);
+        throw new Error("Access denied! Please contact admin");
       }
-    } else if (role_id === 2) {
-      const mail = validateEmail(email);
-      const identity = validateName(password);
-      console.log(identity);
-      if (mail && identity) {
-        user_insert(name, email, role_id, password);
-        console.log("the insertion is success");
-        return res.json({ success: true });
-      }
-      res.json({ success: false });
+    }
+    const emailValid = validateEmail(email);
+    const passwordValid = validateName(password);
+
+    if (emailValid && passwordValid) {
+      const hashedPassword = await createPasswordHash(password);
+      const [[{ id: roleId }]] = await findRoleId(role);
+      await insertUser(name, email, roleId, hashedPassword);
+
+      // fetch the saved user
+      const [[existingUser]] = await getUserByEmail(email);
+      const user = {
+        id: existingUser.id,
+        name,
+        email,
+        role,
+      };
+
+      const accessToken = generateAccessToken(user);
+
+      return res.json({
+        success: true,
+        data: { accessToken, role, username: name },
+      });
+    } else {
+      res.status("400");
+      throw new Error("Invalid input");
     }
   } catch (e) {
-    res.json({ success: false, message: e });
+    next(e);
   }
 };
 
-export const validatePass = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
-    const { email, passwordas } = req.body;
-    console.log("this console log is sigin request body", req.body);
-    let result = await pool.query("select * from users where email = ?", [
-      email,
-    ]);
-    result = result[0][0];
-    console.log(result);
-    if (result) {
-      // const res = result.rows[0];
-      const pas = result.password;
-      const validation = await bcrypt.compare(password, pas);
+    const { email, password, role } = req.body;
+    const [[existingUser]] = await getUserByEmail(email);
+
+    if (existingUser) {
+      if (existingUser.role !== role) {
+        res.status(403);
+        throw new Error("Access denied");
+      }
+      const hashedPassword = existingUser.password;
+      const validation = await bcrypt.compare(password, hashedPassword);
       if (validation) {
-        const role_name = await pool.query(
-          "select role_name from roles where id =?",
-          [result.role_id]
-        );
+        const { id, name, email, role } = existingUser;
         const user = {
-          userId: result.id,
-          email: result.email,
-          role_id: result.role_id,
-          role_name: role_name[0][0].role_name,
+          id,
+          name,
+          email,
+          role,
         };
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-        console.log("login successful");
-        return res.json({ success: true, data: accessToken });
-        // res.status(200).json("VALID PASS");
+        const accessToken = generateAccessToken(user);
+        return res.json({
+          success: true,
+          data: { accessToken, role, username: name },
+        });
       } else {
-        return res.json("wrong pass");
+        res.status(401);
+        throw new Error("Invalid Credentials");
       }
+    } else {
+      res.status(401);
+      throw new Error("Invalid Credentials");
     }
   } catch (e) {
-    console.log(e);
-    res.status(500).json({ success: false, message: e });
+    next(e);
   }
 };
 
-// import { pool } from "./databasePool.js";
-// import bcrypt from "bcrypt";
-// const bcryp = require("bcrypt");
-
-export const user_insert = async function (name, email, role_id, password) {
-  const validPass = await bcrypt.hash(password, 10);
-  const result = pool.query(
-    "insert into users (name,email,role_id,password) values (?,?,?,?)",
-    [name, email, role_id, validPass]
-  );
-  return result;
+export const validateToken = async (req, res, next) => {
+  try {
+    const user = req.user;
+    if (user) {
+      return res.json({ success: true });
+    } else {
+      res.status(401);
+      throw new Error("Invalid accessToken ");
+    }
+  } catch (e) {
+    next(e);
+  }
 };
