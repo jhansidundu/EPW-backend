@@ -128,13 +128,27 @@ export const deleteQuestion = async (req, res, next) => {
   }
 };
 
-export const getQuestionByexamId = async (req, res) => {
+export const getQuestionByexamId = async (req, res, next) => {
   try {
     const { examId } = req.params;
-    const found = pool.query("select duration from exams where id =?", [
-      examId,
-    ]);
-    if (!found) {
+    let [[{ duration, examDate }]] = await pool.query(
+      "select duration,examDate from exams where id =?",
+      [examId]
+    );
+    let d = new Date(examDate);
+    duration = duration + 2;
+    let v = new Date();
+    const currentDate = new Date();
+    v.setMinutes(d.getMinutes() + duration);
+    console.log(v);
+    console.log(duration);
+    if (isBetweenDates(currentDate, examDate, v)) {
+      console.log("sueessss");
+    }
+    function isBetweenDates(currentDate, examDate, v) {
+      return currentDate >= examDate && currentDate <= v;
+    }
+    if (!duration) {
       throw new Error("examid not exist");
     }
     const response = await findallQuestionsByexamId(examId);
