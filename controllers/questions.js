@@ -4,6 +4,7 @@ import {
   findQuestionsByExamForTeacher,
   insert,
   update,
+  findallQuestionsByexamId,
 } from "../db/questions.js";
 
 export const addQuestion = async (req, res, next) => {
@@ -123,5 +124,16 @@ export const deleteQuestion = async (req, res, next) => {
     return res.json({ success: true });
   } catch (err) {
     next(err);
+  }
+};
+
+export const getQuestionByexamId = async (req, res) => {
+  try {
+    const { examId } = req.params;
+    const response = findallQuestionsByexamId(examId);
+    console.log(response);
+    res.send({ success: true });
+  } catch (e) {
+    next(e);
   }
 };

@@ -80,3 +80,10 @@ export const delQuestion = async (questionId) => {
   const sql = `DELETE FROM questions WHERE id=?`;
   await pool.query(sql, [questionId]);
 };
+
+export const findallQuestionsByexamId = async (examId) => {
+  const sql =
+    "select id, question, optionA, optionB, optionC, optionD, marks, hasNegative, negativePercentage from questions where examId = ?";
+  const res = await pool.query(sql, [examId]);
+  return res;
+};
