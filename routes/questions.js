@@ -14,7 +14,7 @@ router.post("/update/", validateAccessToken, updateQuestion);
 router.delete("/:questionId", validateAccessToken, deleteQuestion);
 router.get("/:questionId", validateAccessToken, getQuestion);
 router.get(
-  "/student/exam/:id/questions",
+  "/student/exam/:examId/questions",
   validateAccessToken,
   getQuestionByexamId
 );

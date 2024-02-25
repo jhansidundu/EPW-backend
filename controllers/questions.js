@@ -1,3 +1,4 @@
+import { pool } from "../db/databasePool.js";
 import {
   delQuestion,
   findQuestion,
@@ -130,9 +131,15 @@ export const deleteQuestion = async (req, res, next) => {
 export const getQuestionByexamId = async (req, res) => {
   try {
     const { examId } = req.params;
-    const response = findallQuestionsByexamId(examId);
+    const found = pool.query("select duration from exams where id =?", [
+      examId,
+    ]);
+    if (!found) {
+      throw new Error("examid not exist");
+    }
+    const response = await findallQuestionsByexamId(examId);
     console.log(response);
-    res.send({ success: true });
+    res.send(response[0]);
   } catch (e) {
     next(e);
   }
