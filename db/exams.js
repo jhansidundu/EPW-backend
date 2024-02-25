@@ -81,3 +81,18 @@ export const updateSettings = async ({
     id,
   ]);
 };
+export const findStudentEnrolledExams = async (userId) => {
+  const response = pool.query(
+    "select examId from enrolled_users where userId = ?",
+    [userId]
+  );
+  return response;
+};
+
+export const findExamDetails = async (examId) => {
+  const sql =
+    "select id, name, examDate, duration, totalQuestions from exams where id =?";
+  const res = await pool.query(sql, [examId]);
+
+  return res;
+};

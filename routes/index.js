@@ -5,7 +5,7 @@ import enrollUsersRoutes from "./enrollUsers.js";
 import examRoutes from "./exams.js";
 import questionRoutes from "./questions.js";
 import Answers from "./studentAnswer.js";
-
+import enrollexams from "./getStudentExams.js";
 const router = express.Router();
 
 router.use("/user", userRoutes);
@@ -14,5 +14,5 @@ router.use("/answers", Answers);
 router.use("/admin", adminRoutes);
 router.use("/exam", examRoutes);
 router.use("/question", questionRoutes);
-
+router.use("/student", enrollexams);
 export default router;

@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import express from "express";
 import routes from "./routes/index.js";
 import { errorHandler, notFound } from "./util/middleware.js";
+import setExams from "./routes/studentAnswer.js";
+
 dotenv.config();
 const app = express();
 
