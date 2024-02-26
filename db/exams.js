@@ -96,3 +96,11 @@ export const findExamDetails = async (examId) => {
 
   return res;
 };
+
+export const findAllEnrolledStudentsforExam = async (examId) => {
+  const sql =
+    "select enrolled_users.examId, enrolled_users.id,enrolled_users.email,enrolled_users.status, users.name from enrolled_users left join users on enrolled_users.email = users.email where enrolled_users.examId =?";
+  const response = await pool.query(sql, [examId]);
+
+  return response;
+};

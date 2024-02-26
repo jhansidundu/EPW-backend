@@ -10,6 +10,7 @@ import {
   getExams,
   getExamswithId,
   updateExamSettings,
+  enrolledStudentsForExam,
 } from "../controllers/exams.js";
 import { validateAccessToken } from "../util/middleware.js";
 import { getQuestionsByExam } from "../controllers/questions.js";
@@ -23,5 +24,9 @@ router.get("/details/:id", validateAccessToken, getExamDetails);
 router.get("/:id", validateAccessToken, getExamswithId);
 router.delete("/:id", validateAccessToken, deleteExam);
 router.get("/:examId/questions", validateAccessToken, getQuestionsByExam);
-
+router.get(
+  "/:examId/enrolled-students",
+  validateAccessToken,
+  enrolledStudentsForExam
+);
 export default router;

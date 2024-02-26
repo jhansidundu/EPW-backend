@@ -137,20 +137,18 @@ export const getQuestionByexamId = async (req, res, next) => {
     );
     let d = new Date(examDate);
     duration = duration + 2;
-    let v = new Date();
+    let updateCurrent = new Date();
     const currentDate = new Date();
-    v.setMinutes(d.getMinutes() + duration);
-    console.log(v);
+    currentDate.setMinutes(d.getMinutes() + duration);
+    // console.log(updateDate);
     console.log(duration);
-    if (isBetweenDates(currentDate, examDate, v)) {
-      console.log("sueessss");
+    function isBetweenDates(currentDate, examDate, updateCurrent) {
+      return currentDate >= examDate && currentDate <= updateCurrent;
     }
-    function isBetweenDates(currentDate, examDate, v) {
-      return currentDate >= examDate && currentDate <= v;
-    }
-    if (!duration) {
+    if (isBetweenDates(currentDate, examDate, updateCurrent)) {
       throw new Error("examid not exist");
     }
+
     const response = await findallQuestionsByexamId(examId);
     console.log(response);
     res.send(response[0]);

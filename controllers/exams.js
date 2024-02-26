@@ -5,6 +5,7 @@ import {
   findExamsByTeacher,
   insertExam,
   updateSettings,
+  findAllEnrolledStudentsforExam,
 } from "../db/exams.js";
 export async function createExam(req, res, next) {
   try {
@@ -130,6 +131,20 @@ export const updateExamSettings = async (req, res, next) => {
     });
     console.log(result);
     return res.json({ success: true, data: result });
+  } catch (e) {
+    next(e);
+  }
+};
+
+// /exam/:id/enrolled-students
+
+export const enrolledStudentsForExam = async (req, res, next) => {
+  try {
+    const { examId } = req.params;
+    const response = await findAllEnrolledStudentsforExam(examId);
+    console.log(response);
+
+    res.send(response[0]);
   } catch (e) {
     next(e);
   }
