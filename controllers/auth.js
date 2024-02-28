@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { findRoleId } from "../db/roles.js";
 import { checkIfEmailExists } from "../db/teachers.js";
 import { getUserByEmail, insertUser } from "../db/user.js";
-import { createPasswordHash } from "../util/crypt.js";
+import { createPasswordHash } from "../util/cryptUtil.js";
 import { validateEmail, validateName } from "../util/validations.js";
 import { generateAccessToken } from "../util/jwtUtil.js";
 
@@ -30,7 +30,7 @@ export const registerUser = async (req, res, next) => {
     if (emailValid && passwordValid) {
       const hashedPassword = await createPasswordHash(password);
       const [[{ id: roleId }]] = await findRoleId(role);
-      await insertUser(name, email, roleId, hashedPassword);
+      await insertUser({ name, email, roleId, password: hashedPassword });
 
       // fetch the saved user
       const [[existingUser]] = await getUserByEmail(email);

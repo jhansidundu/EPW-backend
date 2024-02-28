@@ -81,26 +81,18 @@ export const updateSettings = async ({
     id,
   ]);
 };
-export const findStudentEnrolledExams = async (userId) => {
-  const response = pool.query(
-    "select examId from enrolled_users where userId = ?",
-    [userId]
-  );
-  return response;
-};
-
-export const findExamDetails = async (examId) => {
-  const sql =
-    "select id, name, examDate, duration, totalQuestions from exams where id =?";
-  const res = await pool.query(sql, [examId]);
-
-  return res;
-};
-
-export const findAllEnrolledStudentsforExam = async (examId) => {
-  const sql =
-    "select enrolled_users.examId, enrolled_users.id,enrolled_users.email,enrolled_users.status, users.name from enrolled_users left join users on enrolled_users.email = users.email where enrolled_users.examId =?";
-  const response = await pool.query(sql, [examId]);
-
-  return response;
+export const findStudentEnrolledExams = async (email) => {
+  const sql = `
+  SELECT 
+    eu.id as enrollmentId, eu.examId, e.examDate,
+    eu.registrationDate, eu.hasAttempted, 
+    es.label as statusLabel, es.status as status, 
+    e.name, e.duration, e.totalQuestions 
+  FROM enrolled_users eu 
+  JOIN exams e ON eu.examId=e.id 
+  JOIN enrollment_status es ON eu.status=es.id
+  WHERE eu.email=?
+  `;
+  const [result] = await pool.query(sql, [email]);
+  return result;
 };

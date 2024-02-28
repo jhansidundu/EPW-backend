@@ -3,10 +3,11 @@ import {
   findAllExamStatus,
   findExamDetailsById,
   findExamsByTeacher,
+  findStudentEnrolledExams,
   insertExam,
   updateSettings,
-  findAllEnrolledStudentsforExam,
 } from "../db/exams.js";
+import { checkIfExamIsActiveUtil } from "../util/dateUtil.js";
 export async function createExam(req, res, next) {
   try {
     if (req.user.role !== "teacher") {
@@ -129,23 +130,32 @@ export const updateExamSettings = async (req, res, next) => {
       negativeMarking,
       switchBetweenQuestions,
     });
-    console.log(result);
     return res.json({ success: true, data: result });
   } catch (e) {
     next(e);
   }
 };
 
-// /exam/:id/enrolled-students
-
-export const enrolledStudentsForExam = async (req, res, next) => {
+export const getStudentExams = async (req, res, next) => {
   try {
-    const { examId } = req.params;
-    const response = await findAllEnrolledStudentsforExam(examId);
-    console.log(response);
-
-    res.send(response[0]);
+    const { email } = req.user;
+    let exams = await findStudentEnrolledExams(email);
+    if (!exams) {
+      exams = [];
+    }
+    res.json({ success: true, data: exams });
   } catch (e) {
     next(e);
+  }
+};
+
+export const checkIfExamisActive = async (req, res, next) => {
+  try {
+    const { examId } = req.params;
+    const exam = await findExamDetailsById(examId);
+    checkIfExamIsActiveUtil(exam);
+    return res.json({ success: true });
+  } catch (err) {
+    next(err);
   }
 };

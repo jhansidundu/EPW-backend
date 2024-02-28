@@ -81,9 +81,13 @@ export const delQuestion = async (questionId) => {
   await pool.query(sql, [questionId]);
 };
 
-export const findallQuestionsByexamId = async (examId) => {
-  const sql =
-    "select id, question, optionA, optionB, optionC, optionD, marks, hasNegative, negativePercentage from questions where examId = ?";
-  const res = await pool.query(sql, [examId]);
-  return res;
+export const findQuestionsByExamForStudent = async (examId) => {
+  const sql = `
+    SELECT 
+      id, question, optionA, 
+      optionB, optionC, optionD, 
+      marks, hasNegative, negativePercentage 
+    FROM questions WHERE examId=?`;
+  const [result] = await pool.query(sql, [examId]);
+  return result;
 };

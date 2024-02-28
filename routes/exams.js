@@ -1,8 +1,7 @@
-// GET api/exams
-// GET api/exams/:examId
-// POST
 import express from "express";
+import { getEnrolledUsers } from "../controllers/enrollUsers.js";
 import {
+  checkIfExamisActive,
   createExam,
   deleteExam,
   getExamDetails,
@@ -10,10 +9,9 @@ import {
   getExams,
   getExamswithId,
   updateExamSettings,
-  enrolledStudentsForExam,
 } from "../controllers/exams.js";
-import { validateAccessToken } from "../util/middleware.js";
 import { getQuestionsByExam } from "../controllers/questions.js";
+import { validateAccessToken } from "../util/middleware.js";
 const router = express.Router();
 router.get("/", validateAccessToken, getExams);
 router.get("/status", getExamStatusList);
@@ -24,9 +22,6 @@ router.get("/details/:id", validateAccessToken, getExamDetails);
 router.get("/:id", validateAccessToken, getExamswithId);
 router.delete("/:id", validateAccessToken, deleteExam);
 router.get("/:examId/questions", validateAccessToken, getQuestionsByExam);
-router.get(
-  "/:examId/enrolled-students",
-  validateAccessToken,
-  enrolledStudentsForExam
-);
+router.get("/:examId/enrollments", validateAccessToken, getEnrolledUsers);
+router.get("/:examId/active", validateAccessToken, checkIfExamisActive);
 export default router;

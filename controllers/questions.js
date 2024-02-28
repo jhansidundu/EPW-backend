@@ -1,12 +1,13 @@
-import { pool } from "../db/databasePool.js";
+import { findExamDetailsById } from "../db/exams.js";
 import {
   delQuestion,
   findQuestion,
+  findQuestionsByExamForStudent,
   findQuestionsByExamForTeacher,
   insert,
   update,
-  findallQuestionsByexamId,
 } from "../db/questions.js";
+import { checkIfExamIsActiveUtil } from "../util/dateUtil.js";
 
 export const addQuestion = async (req, res, next) => {
   try {
@@ -128,30 +129,15 @@ export const deleteQuestion = async (req, res, next) => {
   }
 };
 
-export const getQuestionByexamId = async (req, res, next) => {
+export const getQuestionsByExamIdForStudents = async (req, res, next) => {
   try {
     const { examId } = req.params;
-    let [[{ duration, examDate }]] = await pool.query(
-      "select duration,examDate from exams where id =?",
-      [examId]
-    );
-    let d = new Date(examDate);
-    duration = duration + 2;
-    let updateCurrent = new Date();
-    const currentDate = new Date();
-    currentDate.setMinutes(d.getMinutes() + duration);
-    // console.log(updateDate);
-    console.log(duration);
-    function isBetweenDates(currentDate, examDate, updateCurrent) {
-      return currentDate >= examDate && currentDate <= updateCurrent;
-    }
-    if (isBetweenDates(currentDate, examDate, updateCurrent)) {
-      throw new Error("examid not exist");
-    }
+    const exam = await findExamDetailsById(examId);
 
-    const response = await findallQuestionsByexamId(examId);
-    console.log(response);
-    res.send(response[0]);
+    checkIfExamIsActiveUtil(exam);
+
+    const questions = await findQuestionsByExamForStudent(examId);
+    res.json({ success: true, data: questions });
   } catch (e) {
     next(e);
   }

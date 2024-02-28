@@ -38,3 +38,25 @@ export const validateAccessToken = (req, res, next) => {
     next(e);
   }
 };
+
+export const enrollmentMiddleWare = (req, res, next) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const accessToken = authHeader && authHeader.split(" ")[1];
+    if (!accessToken) {
+      req.user = null;
+      next();
+    }
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (err) {
+        req.user = null;
+        next();
+      }
+
+      req.user = user;
+      next();
+    });
+  } catch (e) {
+    next(e);
+  }
+};

@@ -7,8 +7,7 @@ export const getUserByEmail = async (email) => {
   );
 };
 
-export const insertUser = async (name, email, roleId, password) => {
-  console.log(name, email, roleId, password);
+export const insertUser = async ({ name, email, roleId, password }) => {
   return await pool.query(
     "INSERT INTO users (name, email, roleId, password) VALUES (?, ?, ?, ?)",
     [name, email, roleId, password]

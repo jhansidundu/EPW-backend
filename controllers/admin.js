@@ -1,7 +1,7 @@
 import { checkIfEmailExists, insertTeacher } from "../db/teachers.js";
 import { insertUser } from "../db/user.js";
 import { ROLES } from "../util/constants.js";
-import { createPasswordHash } from "../util/crypt.js";
+import { createPasswordHash } from "../util/cryptUtil.js";
 import { validateEmail, validateName } from "../util/validations.js";
 
 export async function addTeacher(req, res, next) {
@@ -56,7 +56,7 @@ export async function addAdmin(req, res, next) {
     const identity = validateName(password);
     if (mail && identity) {
       const hashedPassword = await createPasswordHash(password);
-      await insertUser(name, email, roleId, hashedPassword);
+      await insertUser({ name, email, roleId, password: hashedPassword });
       return res.json({ success: true });
     }
     res.json({ success: true });
