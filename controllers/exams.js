@@ -153,8 +153,8 @@ export const checkIfExamisActive = async (req, res, next) => {
   try {
     const { examId } = req.params;
     const exam = await findExamDetailsById(examId);
-    checkIfExamIsActiveUtil(exam);
-    return res.json({ success: true });
+    const { isActive, message } = checkIfExamIsActiveUtil(exam);
+    return res.json({ success: true, data: { isActive, message } });
   } catch (err) {
     next(err);
   }

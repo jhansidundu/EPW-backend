@@ -18,8 +18,8 @@ export const registerUser = async (req, res, next) => {
       throw new Error("Invalid input");
     }
     if (role === "teacher") {
-      const [[{ exist }]] = await checkIfEmailExists(email);
-      if (!exist) {
+      const [[{ count }]] = await checkIfEmailExists(email);
+      if (count === 0) {
         res.status(403);
         throw new Error("Access denied! Please contact admin");
       }

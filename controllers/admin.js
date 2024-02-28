@@ -17,8 +17,9 @@ export async function addTeacher(req, res, next) {
     }
 
     // check if email already exists
-    const [[{ exist }]] = await checkIfEmailExists(email);
-    if (exist === 1) {
+    const [[{ count }]] = await checkIfEmailExists(email);
+
+    if (count > 0) {
       res.status(400);
       throw new Error("Email already exists");
     }

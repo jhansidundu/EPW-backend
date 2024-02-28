@@ -1,10 +1,9 @@
 import { pool } from "./databasePool.js";
 
 export const checkIfEmailExists = async (email) => {
-  return await pool.query(
-    "SELECT EXISTS (SELECT COUNT(*) count FROM teachers WHERE email = ?) as exist",
-    [email]
-  );
+  return await pool.query(`SELECT COUNT(*) count FROM teachers WHERE email=?`, [
+    email,
+  ]);
 };
 
 export const insertTeacher = async (email) => {
