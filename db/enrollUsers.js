@@ -38,9 +38,15 @@ export const findEnrolledUsers = async (examId) => {
   return result;
 };
 
-export const findEnrollment = async (enrollmentId) => {
+export const findEnrollmentByEnrollmentId = async (enrollmentId) => {
   const sql = `SELECT * FROM enrolled_users WHERE id=?`;
   const [[result]] = await pool.query(sql, [enrollmentId]);
+  return result;
+};
+
+export const findEnrollmentByUserIdAndExamId = async ({ userId, examId }) => {
+  const sql = `SELECT * FROM enrolled_users WHERE userId=? AND examId=?`;
+  const [[result]] = await pool.query(sql, [userId, examId]);
   return result;
 };
 
@@ -56,4 +62,20 @@ export const completeEnrollment = async ({
     WHERE id=?
   `;
   await pool.query(sql, [userId, registrationDate, status, enrollmentId]);
+};
+
+export const updateHasAttempted = async (enrollmentId) => {
+  const sql = `
+    UPDATE enrolled_users 
+    SET hasAttempted=? WHERE id=?
+  `;
+  await pool.query(sql, [true, enrollmentId]);
+};
+
+export const updateHasFinished = async (enrollmentId) => {
+  const sql = `
+    UPDATE enrolled_users 
+    SET hasFinished=? WHERE id=?
+  `;
+  await pool.query(sql, [true, enrollmentId]);
 };

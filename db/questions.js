@@ -81,13 +81,17 @@ export const delQuestion = async (questionId) => {
   await pool.query(sql, [questionId]);
 };
 
-export const findQuestionsByExamForStudent = async (examId) => {
+export const findQuestionsByExamForStudent = async ({ examId, userId }) => {
+  console.log(examId, userId);
   const sql = `
     SELECT 
-      id, question, optionA, 
-      optionB, optionC, optionD, 
-      marks, hasNegative, negativePercentage 
-    FROM questions WHERE examId=?`;
-  const [result] = await pool.query(sql, [examId]);
+      q.id, q.question, q.optionA, 
+      q.optionB, q.optionC, q.optionD, 
+      q.marks, q.hasNegative, q.negativePercentage, 
+      CASE WHEN aa.answer IS NULL THEN '' ELSE aa.answer END as answer
+    FROM questions q LEFT JOIN attempted_answers aa 
+    ON q.id=aa.questionId
+    WHERE q.examId=? AND (aa.userId IS NULL OR aa.userId=?)`;
+  const [result] = await pool.query(sql, [examId, userId]);
   return result;
 };

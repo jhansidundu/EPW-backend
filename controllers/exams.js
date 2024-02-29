@@ -1,4 +1,5 @@
 import { pool } from "../db/databasePool.js";
+import { findEnrollmentByUserIdAndExamId } from "../db/enrollUsers.js";
 import {
   findAllExamStatus,
   findExamDetailsById,
@@ -40,7 +41,7 @@ export async function createExam(req, res, next) {
       switchBetweenQuestions,
     });
     await findExamDetailsById(examId);
-    res.json({ success: true });
+    return res.json({ success: true });
   } catch (e) {
     next(e);
   }
@@ -55,7 +56,7 @@ export const getExams = async (req, res, next) => {
       recordsPerPage,
       page,
     });
-    res.json({ success: true, data: result });
+    return res.json({ success: true, data: result });
   } catch (e) {
     next(e);
   }
@@ -65,7 +66,7 @@ export const getExamDetails = async (req, res, next) => {
   try {
     const { id } = req.params;
     const result = await findExamDetailsById(id);
-    res.json({ success: true, data: result });
+    return res.json({ success: true, data: result });
   } catch (e) {
     next(e);
   }
@@ -143,7 +144,7 @@ export const getStudentExams = async (req, res, next) => {
     if (!exams) {
       exams = [];
     }
-    res.json({ success: true, data: exams });
+    return res.json({ success: true, data: exams });
   } catch (e) {
     next(e);
   }
@@ -152,8 +153,17 @@ export const getStudentExams = async (req, res, next) => {
 export const checkIfExamisActive = async (req, res, next) => {
   try {
     const { examId } = req.params;
+    const userId = req.user.id;
+    const enrollment = await findEnrollmentByUserIdAndExamId({
+      userId,
+      examId,
+    });
     const exam = await findExamDetailsById(examId);
-    const { isActive, message } = checkIfExamIsActiveUtil(exam);
+    let { isActive, message } = checkIfExamIsActiveUtil(exam);
+    if (isActive && !!enrollment.hasFinished) {
+      message = "You already attempted";
+      isActive = false;
+    }
     return res.json({ success: true, data: { isActive, message } });
   } catch (err) {
     next(err);

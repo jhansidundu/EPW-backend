@@ -94,7 +94,7 @@ export const getQuestionsByExam = async (req, res, next) => {
       if (!result) {
         result = [];
       }
-      res.json({ success: true, data: result });
+      return res.json({ success: true, data: result });
     }
   } catch (e) {
     next(e);
@@ -109,7 +109,7 @@ export const getQuestion = async (req, res, next) => {
     }
     const { questionId } = req.params;
     const result = await findQuestion(questionId);
-    res.json({ success: true, data: result });
+    return res.json({ success: true, data: result });
   } catch (err) {
     next(err);
   }
@@ -134,10 +134,16 @@ export const getQuestionsByExamIdForStudents = async (req, res, next) => {
     const { examId } = req.params;
     const exam = await findExamDetailsById(examId);
 
-    checkIfExamIsActiveUtil(exam);
-
-    const questions = await findQuestionsByExamForStudent(examId);
-    res.json({ success: true, data: questions });
+    const { isActive, message } = checkIfExamIsActiveUtil(exam);
+    if (isActive) {
+      const questions = await findQuestionsByExamForStudent({
+        examId,
+        userId: req.user.id,
+      });
+      return res.json({ success: true, data: questions });
+    } else {
+      return res.json({ success: false, message });
+    }
   } catch (e) {
     next(e);
   }

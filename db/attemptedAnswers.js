@@ -36,7 +36,7 @@ export const updateAttemptedAnswer = async ({
 }) => {
   const sql = `
     UPDATE attempted_answers 
-        SET answer=?, updatedAt=?,     
+        SET answer=?, updatedAt=?    
     WHERE id=?`;
   await pool.query(sql, [newAnswer, updatedAt, answerId]);
 };

@@ -60,7 +60,7 @@ export async function addAdmin(req, res, next) {
       await insertUser({ name, email, roleId, password: hashedPassword });
       return res.json({ success: true });
     }
-    res.json({ success: true });
+    return res.json({ success: true });
   } catch (e) {
     next(e);
   }

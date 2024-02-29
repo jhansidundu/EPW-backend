@@ -5,6 +5,7 @@ import {
   completeStudentAutoEnrollment,
   completeStudentEnrollment,
   finishExam,
+  markStartExam,
   saveAnswer,
 } from "../controllers/student.js";
 import {
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get("/exams", validateAccessToken, getStudentExams);
 router.post("/exam/:examId/finish", validateAccessToken, finishExam);
+router.get("/exam/:examId/start", validateAccessToken, markStartExam);
 router.post("/exam/question/answer", validateAccessToken, saveAnswer);
 router.post(
   "/auto-enroll",
@@ -27,4 +29,5 @@ router.get(
   validateAccessToken,
   getQuestionsByExamIdForStudents
 );
+
 export default router;
