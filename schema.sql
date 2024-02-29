@@ -139,3 +139,14 @@ INSERT INTO `exams` VALUES (8,11,'2024-02-15 04:30:00',30,12,'Exam 1',1,1,0,0,0,
 
 -- Dumping data for table `questions`
 INSERT INTO `questions` VALUES (5,8,'<p>Find the sum of first 100 natural numbers.</p>','5500','5512','5502','5590','B',2,0,'');
+
+
+CREATE TABLE results (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  examId INT NOT NULL,
+  userId INT NOT NULL,
+  results int,
+  grade varchar(255),
+  FOREIGN KEY (examId) REFERENCES exams(id),
+  FOREIGN KEY (userId) REFERENCES users(id)
+);
