@@ -89,9 +89,9 @@ export const findQuestionsByExamForStudent = async ({ examId, userId }) => {
       q.optionB, q.optionC, q.optionD, 
       q.marks, q.hasNegative, q.negativePercentage, 
       CASE WHEN aa.answer IS NULL THEN '' ELSE aa.answer END as answer
-    FROM questions q LEFT JOIN attempted_answers aa 
+    FROM questions q LEFT JOIN (SELECT * FROM attempted_answers WHERE userId=?) aa 
     ON q.id=aa.questionId
-    WHERE q.examId=? AND (aa.userId IS NULL OR aa.userId=?)`;
-  const [result] = await pool.query(sql, [examId, userId]);
+    WHERE q.examId=?`;
+  const [result] = await pool.query(sql, [userId, examId]);
   return result;
 };

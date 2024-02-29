@@ -82,11 +82,11 @@ export const login = async (req, res, next) => {
           data: { accessToken, role, username: name },
         });
       } else {
-        res.status(401);
+        res.status(400);
         throw new Error("Invalid Credentials");
       }
     } else {
-      res.status(401);
+      res.status(400);
       throw new Error("Invalid Credentials");
     }
   } catch (e) {
