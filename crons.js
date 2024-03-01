@@ -10,11 +10,12 @@ import {
   findActualAnswers,
   findPendingAttemptsToGrade,
   findUserAnswers,
-  findmarks,
+  insertResult,
 } from "./db/results.js";
 import enrollmentTemplate from "./templates/enrollmentTemplate.js";
 import { encrypt } from "./util/cryptUtil.js";
 import { transporter } from "./util/emailUtil.js";
+import { convertFractionToNumber } from "./util/numberUtil.js";
 
 dotenv.config();
 
@@ -64,35 +65,24 @@ cron.schedule("* * * * *", async () => {
 });
 
 cron.schedule("* * * * *", async () => {
-  let attempts = await findPendingAttemptsToGrade();
-  console.log(attempts);
-
-  for (const ele in attempts) {
-    console.log(ele);
-
-    let examId = ele.examId;
-    let userId = ele.userId;
-    console.log(examId, userId);
+  const attempts = await findPendingAttemptsToGrade();
+  for (const { examId, userId } of attempts) {
     if (userId && examId) {
-      let userAns = await findUserAnswers(examId, userId);
-      let realAns = await findActualAnswers(examId, userId);
+      let userAnswers = await findUserAnswers(examId, userId);
+      let answers = await findActualAnswers(examId, userId);
 
-      console.log(userAns);
-      console.log(realAns);
-      let hisresult = 0;
-      // for (let i = 0; i < Math.min(userAns[0].length, realAns[0].length); i++) {
-      //   console.log(array1[i], array2[i]);
-      // }
+      let totalScore = 0;
 
-      // for (let key1 in userAns[0]) {
-      //   const right = false;
-      //   for (let key2 in realAns[0]) {
-      //     if (key1.answer === key2.answer && key1.questionId === key2.id) {
-      //       const howmuchmarks = findmarks(key1.questionId);
-      //       hisresult = hisresult + howmuchmarks[0][0].marks;
-      //     }
-      //   }
-      // }
+      for (const ele of userAnswers) {
+        const answer = answers.find((e) => e.questionId === ele.questionId);
+        if (answer.answer === ele.answer) {
+          totalScore += parseInt(answer.marks);
+        } else if (!!answer.hasNegative) {
+          totalScore -=
+            convertFractionToNumber(answer.negativePercentage) * answer.marks;
+        }
+      }
+      await insertResult({ examId, userId, result: totalScore });
     }
   }
 });

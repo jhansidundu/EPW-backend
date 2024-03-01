@@ -5,6 +5,7 @@ import {
   completeStudentAutoEnrollment,
   completeStudentEnrollment,
   finishExam,
+  getStudentResult,
   markStartExam,
   saveAnswer,
 } from "../controllers/student.js";
@@ -29,5 +30,6 @@ router.get(
   validateAccessToken,
   getQuestionsByExamIdForStudents
 );
+router.get("/exam/:examId/result", validateAccessToken, getStudentResult);
 
 export default router;

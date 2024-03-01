@@ -5,7 +5,7 @@ export const findPendingAttemptsToGrade = async () => {
   SELECT eu.examId, eu.userId 
   FROM enrolled_users eu 
   LEFT JOIN results r  
-    ON (eu.userId=r.userId & eu.examId=r.examId)
+    ON (eu.userId=r.userId AND eu.examId=r.examId)
   WHERE eu.hasFinished = 1
     AND r.id IS NULL
   LIMIT 5
@@ -15,20 +15,29 @@ export const findPendingAttemptsToGrade = async () => {
 };
 
 export const findUserAnswers = async (examId, userId) => {
-  const sql =
-    "select answer,questionId from attempted_answers where examId = ? && userId = ?";
-  const response = await pool.query(sql, [examId, userId]);
-  return response;
+  const sql = `SELECT answer, questionId from attempted_answers 
+    WHERE examId=? AND userId=?`;
+  const [result] = await pool.query(sql, [examId, userId]);
+  return result;
 };
 
-export const findActualAnswers = async (examId, userId) => {
-  const sql = "select answer ,id from questions where examId = ?";
-  const response = await pool.query(sql, [examId]);
-  return response;
+export const findActualAnswers = async (examId) => {
+  const sql = `
+  SELECT answer, id AS questionId, marks, hasNegative, negativePercentage
+  FROM questions WHERE examId=?`;
+  const [result] = await pool.query(sql, [examId]);
+  return result;
 };
 
-export const findmarks = async (id) => {
-  const sql = "select marks from questions where id = ?";
-  const response = await pool.query(sql, [id]);
-  return response;
+export const insertResult = async ({ examId, userId, result }) => {
+  const sql = `INSERT INTO results (examId, userId, results)
+    VALUES (?, ?, ?)
+  `;
+  await pool.query(sql, [examId, userId, result]);
+};
+
+export const findStudentResult = async ({ examId, userId }) => {
+  const sql = `SELECT * FROM results WHERE examId=? AND userId=?`;
+  const [[result]] = await pool.query(sql, [examId, userId]);
+  return result;
 };

@@ -13,6 +13,7 @@ import {
 } from "../db/enrollUsers.js";
 import { findEnrollmentStatusId } from "../db/enrollmentStatus.js";
 import { findExamDetailsById } from "../db/exams.js";
+import { findStudentResult } from "../db/results.js";
 import { decrypt } from "../util/cryptUtil.js";
 import { checkIfExamIsActiveUtil } from "../util/dateUtil.js";
 
@@ -193,6 +194,21 @@ export const completeStudentEnrollment = async (req, res, next) => {
           authenticated: false,
         },
       });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getStudentResult = async (req, res, next) => {
+  try {
+    const { examId } = req.params;
+    const userId = req.user.id;
+    const result = await findStudentResult({ examId, userId });
+    if (!!result) {
+      return res.json({ success: true, data: result });
+    } else {
+      return res.json({ success: true, data: null });
     }
   } catch (err) {
     next(err);
