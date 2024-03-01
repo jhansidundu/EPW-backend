@@ -6,6 +6,7 @@ import {
   findExamsByTeacher,
   findStudentEnrolledExams,
   insertExam,
+  update,
   updateSettings,
 } from "../db/exams.js";
 import { checkIfExamIsActiveUtil } from "../util/dateUtil.js";
@@ -41,6 +42,49 @@ export async function createExam(req, res, next) {
       switchBetweenQuestions,
     });
     await findExamDetailsById(examId);
+    return res.json({ success: true });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function updateExam(req, res, next) {
+  try {
+    if (req.user.role !== "teacher") {
+      res.status(403);
+      throw new Error("Access denied");
+    }
+    const { examId } = req.params;
+    const exam = await findExamDetailsById(examId);
+    if (!exam || exam.createdBy != req.user.id) {
+      res.status(403);
+      throw new Error("Access denied");
+    }
+    const {
+      name,
+      examDate,
+      duration,
+      totalQuestions,
+      lockBrowser,
+      webcam,
+      shuffleQuestions,
+      negativeMarking,
+      switchBetweenQuestions,
+    } = req.body;
+
+    await update({
+      name,
+      examDate: new Date(examDate),
+      duration,
+      totalQuestions,
+      createdBy: req.user.id,
+      lockBrowser,
+      webcam,
+      shuffleQuestions,
+      negativeMarking,
+      switchBetweenQuestions,
+      examId,
+    });
     return res.json({ success: true });
   } catch (e) {
     next(e);

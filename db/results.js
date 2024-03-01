@@ -1,9 +1,17 @@
 import { pool } from "./databasePool.js";
 
-export const findResult = async () => {
-  const sql = "select examId,userId from enrolled_users where hasFinished = 1";
-  const response = await pool.query(sql);
-  return response;
+export const findPendingAttemptsToGrade = async () => {
+  const sql = `
+  SELECT eu.examId, eu.userId 
+  FROM enrolled_users eu 
+  LEFT JOIN results r  
+    ON (eu.userId=r.userId & eu.examId=r.examId)
+  WHERE eu.hasFinished = 1
+    AND r.id IS NULL
+  LIMIT 5
+  `;
+  const [result] = await pool.query(sql);
+  return result;
 };
 
 export const findUserAnswers = async (examId, userId) => {

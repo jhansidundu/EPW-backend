@@ -8,6 +8,7 @@ import {
   getExamStatusList,
   getExams,
   getExamswithId,
+  updateExam,
   updateExamSettings,
 } from "../controllers/exams.js";
 import { getQuestionsByExam } from "../controllers/questions.js";
@@ -17,6 +18,7 @@ router.get("/", validateAccessToken, getExams);
 router.get("/status", getExamStatusList);
 router.get("/teacher", validateAccessToken, getExams);
 router.post("/add", validateAccessToken, createExam);
+router.post("/:examId/update", validateAccessToken, updateExam);
 router.post("/update/settings", validateAccessToken, updateExamSettings);
 router.get("/details/:id", validateAccessToken, getExamDetails);
 router.get("/:id", validateAccessToken, getExamswithId);

@@ -5,7 +5,7 @@ const emailTemplate = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enrollment Invitation for [Exam Name]</title>
+    
     <style>
         /* You can add your own styles here */
         body {
@@ -78,11 +78,9 @@ const emailTemplate = `
 
         <p>Please note that enrollment is required to take the exam. Click the button above to register and confirm your
             participation.</p>
-        <p>We encourage you to review the exam information and preparation materials before enrolling. You can find more
-            information on our website at [Link to Exam Information Page].</p>
-        <p>If you have any questions, please don't hesitate to contact us at [Contact Email/Phone Number].</p>
-        <p>Sincerely,</p>
-        <p>[Exam Organizer Name/Organization]</p>
+    
+        <p>Sincerely</p>
+        <p>Pareeksha Team</p>
     </div>
 </body>
 

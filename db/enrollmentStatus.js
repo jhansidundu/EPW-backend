@@ -11,6 +11,8 @@ export const findEnrollmentStatusId = async (status) => {
     SELECT id FROM enrollment_status 
     WHERE status=?
     `;
-  const [[{ id }]] = await pool.query(sql, [status]);
-  return id;
+  const [[result]] = await pool.query(sql, [status]);
+  if (result) {
+    return result.id;
+  } else return null;
 };

@@ -1,19 +1,23 @@
+import dotenv from "dotenv";
 import cron from "node-cron";
-import { transporter } from "./util/emailUtil.js";
 import {
   getPendingEnrollmentEmails,
   updateEnrollmentStatus,
 } from "./db/enrollUsers.js";
-import { findExamDetailsById } from "./db/exams.js";
-import enrollmentTemplate from "./templates/enrollmentTemplate.js";
 import { findEnrollmentStatusId } from "./db/enrollmentStatus.js";
+import { findExamDetailsById } from "./db/exams.js";
+import {
+  findActualAnswers,
+  findPendingAttemptsToGrade,
+  findUserAnswers,
+  findmarks,
+} from "./db/results.js";
+import enrollmentTemplate from "./templates/enrollmentTemplate.js";
 import { encrypt } from "./util/cryptUtil.js";
-import { response } from "express";
-import { findResult } from "./db/findResult.js";
+import { transporter } from "./util/emailUtil.js";
 
-import { findUserAnswers } from "./db/findResult.js";
-import { findActualAnswers } from "./db/findResult.js";
-import { findmarks } from "./db/findResult.js";
+dotenv.config();
+
 // send enrollment emails
 cron.schedule("* * * * *", async () => {
   try {
@@ -31,7 +35,7 @@ cron.schedule("* * * * *", async () => {
         "\\[(Exam Name)\\]": examDetails.name,
         "\\[(Exam Date)\\]": examDetails.examDate,
         "\\[(Exam Duration)\\]": examDetails.duration,
-        "\\[(Enrollment Link)\\]": `http://localhost:5173/student/enroll/${uniqueUrl}`,
+        "\\[(Enrollment Link)\\]": `${process.env.FRONTEND_URL}/student/enroll/${uniqueUrl}`,
       };
 
       let replacedTemplate = template;
@@ -60,15 +64,15 @@ cron.schedule("* * * * *", async () => {
 });
 
 cron.schedule("* * * * *", async () => {
-  let response = await findResult();
-  console.log(response);
-  // const examId = response[0][0].examId;
-  // const userId = response[0][0].userId;
-  console.log(examId, userId);
-  for (const ele in response[0]) {
+  let attempts = await findPendingAttemptsToGrade();
+  console.log(attempts);
+
+  for (const ele in attempts) {
+    console.log(ele);
+
     let examId = ele.examId;
     let userId = ele.userId;
-
+    console.log(examId, userId);
     if (userId && examId) {
       let userAns = await findUserAnswers(examId, userId);
       let realAns = await findActualAnswers(examId, userId);
@@ -80,15 +84,15 @@ cron.schedule("* * * * *", async () => {
       //   console.log(array1[i], array2[i]);
       // }
 
-      for (let key1 in userAns[0]) {
-        const right = false;
-        for (let key2 in realAns[0]) {
-          if (key1.answer === key2.answer && key1.questionId === key2.id) {
-            const howmuchmarks = findmarks(key1.questionId);
-            hisresult = hisresult + howmuchmarks[0][0].marks;
-          }
-        }
-      }
+      // for (let key1 in userAns[0]) {
+      //   const right = false;
+      //   for (let key2 in realAns[0]) {
+      //     if (key1.answer === key2.answer && key1.questionId === key2.id) {
+      //       const howmuchmarks = findmarks(key1.questionId);
+      //       hisresult = hisresult + howmuchmarks[0][0].marks;
+      //     }
+      //   }
+      // }
     }
   }
 });

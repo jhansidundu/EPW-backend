@@ -33,6 +33,42 @@ export const insertExam = async ({
   return insertId;
 };
 
+export const update = async ({
+  examId,
+  name,
+  examDate,
+  duration,
+  totalQuestions,
+  createdBy,
+  lockBrowser,
+  webcam,
+  shuffleQuestions,
+  negativeMarking,
+  switchBetweenQuestions,
+}) => {
+  await pool.query(
+    `UPDATE exams 
+    SET 
+      name=?, examDate=?, duration=?, totalQuestions=?, 
+      createdBy=?, lockBrowser=?, webcam=?, shuffleQuestions=?, 
+      negativeMarking=?, switchBetweenQuestions=?
+    WHERE id=?`,
+    [
+      name,
+      examDate,
+      duration,
+      totalQuestions,
+      createdBy,
+      lockBrowser,
+      webcam,
+      shuffleQuestions,
+      negativeMarking,
+      switchBetweenQuestions,
+      examId,
+    ]
+  );
+};
+
 export const findExamsByTeacher = async (teacherId, filters) => {
   const { status, recordsPerPage, page } = filters;
   let sql = `
