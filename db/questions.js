@@ -82,7 +82,6 @@ export const delQuestion = async (questionId) => {
 };
 
 export const findQuestionsByExamForStudent = async ({ examId, userId }) => {
-  console.log(examId, userId);
   const sql = `
     SELECT 
       q.id, q.question, q.optionA, 
