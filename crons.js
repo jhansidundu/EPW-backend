@@ -36,7 +36,7 @@ cron.schedule("* * * * *", async () => {
         "\\[(Exam Name)\\]": examDetails.name,
         "\\[(Exam Date)\\]": examDetails.examDate,
         "\\[(Exam Duration)\\]": examDetails.duration,
-        "\\[(Enrollment Link)\\]": `${process.env.FRONTEND_URL}/student/enroll/${uniqueUrl}`,
+        "\\[(Enrollment Link)\\]": `${process.env.CLIENT_BASE_URL}/student/enroll/${uniqueUrl}`,
       };
 
       let replacedTemplate = template;

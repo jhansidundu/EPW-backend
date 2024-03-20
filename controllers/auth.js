@@ -60,7 +60,7 @@ const handleTeacherSignup = async (name, email, password, role) => {
   const uniqueUrl = encrypt(email);
   const templateReplacements = {
     "\\[(User Name)\\]": name,
-    "\\[(Verification Link)\\]": `${process.env.FRONTEND_URL}/teacher/verify/${uniqueUrl}`,
+    "\\[(Verification Link)\\]": `${process.env.CLIENT_BASE_URL}/teacher/verify/${uniqueUrl}`,
   };
 
   let replacedTemplate = template;
@@ -93,7 +93,7 @@ const handleStudentSignup = async (name, email, password, role) => {
   const uniqueUrl = encrypt(email);
   const templateReplacements = {
     "\\[(User Name)\\]": name,
-    "\\[(Verification Link)\\]": `${process.env.FRONTEND_URL}/student/verify/${uniqueUrl}`,
+    "\\[(Verification Link)\\]": `${process.env.CLIENT_BASE_URL}/student/verify/${uniqueUrl}`,
   };
 
   let replacedTemplate = template;

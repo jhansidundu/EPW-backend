@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:8.2.0
+    # restart: always
+    # ports:
+    #   - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=exam
+      # - MYSQL_USER=jhansi
+      # - MYSQL_PASSWORD=jhansi
+      - MYSQL_ROOT_PASSWORD=ariyana
+    volumes:
+      - db_data:/var/lib/mysql
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - db
+    environment:
+      - PORT=8080
+      # - CLIENT_BASE_URL=http://159.89.166.166
+      - CLIENT_BASE_URL=http://localhost:5173
+      - MYSQL_HOST=db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=ariyana
+      - MYSQL_DATABASE=exam
+      - ACCESS_TOKEN_SECRET=9b662d06841f34f6c9a584e22391b17eb7c9f0163b60ca4b62f1b2a2bbbeb775bf880b168884b0b0238dfb7a536ae3e5f9b65693b513e80a1dfce5401a7f04e0
+      - REFRESH_TOKEN_SECRET=36b7ad33f924e9c6f9df0bbe1835a64ce2a4ba4b60d399cf5b48202695e2cfe9b51d29c118d8730cf0cdda83722b454f1f436883e92c7a9daf95f7943e1e7188
+      - LINK_SECRET=36b7ad33f924e9c6f9df0bbe1835a64c
+    ports:
+      - 8080:8080
+volumes:
+  db_data:

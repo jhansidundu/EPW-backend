@@ -1,0 +1,5 @@
+.env
+.gitignore
+node_modules
+docker-compose*.yaml
+schema.sql
